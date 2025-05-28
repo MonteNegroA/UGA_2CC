@@ -88,16 +88,6 @@ def sumas_filas(fila1, fila2, fila3, fila4):
         if fila3[z] == fila4[z] and fila3[z] != "":
             fila3[z] += fila4[z]
             fila4[z] = ""
-    for c in range(4):
-        if fila4[c]== fila1[c] and fila3[c]== "" and fila2[c] == "":
-            fila4[c] += fila1[c]
-            fila1[c] = ""
-        if fila4[c]== fila2[c] and fila3[c]== "":
-            fila4[c] += fila2[c]
-            fila2[c] = ""
-        if fila1[c]== fila3[c] and fila2[c]== "":
-            fila3[c] += fila1[c]
-            fila1[c] = ""
 
 def sumas_columnas(matriz):
     for f in range(4):
@@ -105,16 +95,7 @@ def sumas_columnas(matriz):
             if matriz[f][c] == matriz[f][c+1] and matriz[f][c] != "":
                 matriz[f][c+1] += matriz[f][c]
                 matriz[f][c] = ""
-    for f in range(4):
-        if matriz[f][0]== matriz[f][3] and matriz[f][2]== "" and matriz[f][1] == "":
-            matriz[f][3] += matriz[f][0]
-            matriz[f][0] = ""
-        if matriz[f][0]== matriz[f][2] and matriz[f][1]== "":
-            matriz[f][2] += matriz[f][0]
-            matriz[f][0] = ""
-        if matriz[f][1]== matriz[f][3] and matriz[f][2]== "":
-            matriz[f][3] += matriz[f][1]
-            matriz[f][1] = ""
+
 
 def mov_izquierda(tablero):
     for _ in range(4):
@@ -183,6 +164,12 @@ def teclas():
             mov_abajo(fila1, fila2, fila3, fila4)
         aparicion(tablero)
         mostrar_tablero(tablero)
+        vacias = 0
+        for c in range(4):
+            for a in range(4):
+                if tablero[c][a]== "":
+                    vacias = vacias+1
+        print("Casillas vacías: ", vacias) 
 
 def modo_individual():
     generar_tablero_inicial()
