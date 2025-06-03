@@ -39,7 +39,6 @@
     - Botón de Ayuda: Mostrar instrucciones del juego
     - Opcion de retroceso (Undo)
 """
-# Importaciones
 import tkinter as tk
 import random
 import copy
@@ -168,43 +167,6 @@ def mov_abajo(fila1, fila2, fila3, fila4):
                     movimiento = True
                 fila2[r], fila1[r] = fila1[r], ""
     return movimiento
-
-def validacion_movimientos(cond1,cond2,mov):
-    pro = False
-    if cond1 == True or cond2 == True:
-        mov = mov + 1
-        pro = True
-    vacias(tablero,mov)
-    if pro == True:
-        aparicion(tablero)
-    return mov
-
-def vacias(tablero,mov):
-    lista = []
-    vacias = 0
-    for c in range(4):
-        for a in range(4):
-            if tablero[c][a] == "":
-                vacias = vacias+1
-            elif tablero[c][a] != "":
-                lista.append(tablero[c][a])
-            elif tablero[c][a] == 2048:
-                print("Juego terminado")
-                #Incovar al tablero
-                mostrar_tablero_final_bonito(tablero, puntaje=mov, mayor=max(lista))
-                mostrar_menu()
-    mayor = max(lista)
-    #Para que se mire bonito
-    if vacias == 0:
-        print("Juego terminado")
-        print("Movimientos Totales: ", mov-1)
-        print("Número mayor obtenido: ", mayor)
-        mostrar_tablero_final_bonito(tablero, puntaje=mov-1, mayor=mayor)  
-        return
-        mostrar_menu()
-    print("Movimiento # " ,mov)
-    print("Número mayor: ", mayor)
-    print("Casillas vacías: ", vacias) 
     
 def aparicion(tablero):
     while True:
@@ -235,7 +197,12 @@ def mostrar_tablero_final_bonito(tablero, puntaje, mayor):
         print("+" + "-------+" * 4)
 
 def teclas():
+    movimientos_replay = []
     mov = 0
+    i = 0
+    lista = []
+    vacias = 0
+    mayor = 0
     while True:
         tecla = input("Movimiento (a=izquierda, d=derecha, w=arriba, s=abajo, q=salir, h=ayuda): ")
         if tecla == "q":
@@ -260,14 +227,43 @@ def teclas():
             cond1 = mov_abajo(fila1, fila2, fila3, fila4)
             cond2 = sumas_filas(fila1, fila2, fila3, fila4)
             mov_abajo(fila1, fila2, fila3, fila4)
-
-        mov = validacion_movimientos(cond1,cond2,mov)
+        else:
+            print("Movimiento inválido")
+        if cond1 or cond2:
+            mov = mov+1
+            i = i+1
+            movimientos_replay.append(copy.deepcopy(tablero))
+            aparicion(tablero)
         mostrar_tablero(tablero)
+        lista = [tablero[f][c] for f in range(4) for c in range(4) if tablero[f][c] != ""]
+        mayor = max(lista) if lista else 0
+        vacias = sum(1 for f in range(4) for c in range(4) if tablero[f][c] == "")
+        if mayor >= 2048 or vacias == 0:
+            print("Juego terminado")
+            print("Movimientos Totales: ", mov)
+            print("Número mayor obtenido: ", mayor)
+            mostrar_tablero_final_bonito(tablero, puntaje=mov, mayor=mayor)  
+            repeticion(i, movimientos_replay)
+            mostrar_menu()
+        print("Movimiento # " ,mov)
+        print("Número mayor: ", mayor)
+        print("Casillas vacías: ", vacias) 
+
+
+def repeticion(i, movimientos_replay):
+    print("Desea ver la repeticion?")
+    n = input()
+    if n == "y":
+        for x in range(1,i+1):
+            print("Movimiento #: ", x-1)
+            mostrar_tablero(movimientos_replay[x-1])
+        print("\n")
 
 def modo_individual():
     generar_tablero_inicial()
     mostrar_tablero(tablero)
     teclas()
+
 
 
 # ----------------------------------------------
@@ -282,6 +278,8 @@ def jugar_turno(tablero_inicial, jugador):
     tablero_jugador = copy.deepcopy(tablero_inicial)
     fila1, fila2, fila3, fila4 = tablero_jugador[0], tablero_jugador[1], tablero_jugador[2], tablero_jugador[3]
     mov = 0
+    movimientos_replay = []
+    i = 0
     while True:
         mostrar_tablero(tablero_jugador)
         tecla = input(f"{jugador} - Movimiento (a=izquierda, d=derecha, w=arriba, s=abajo, q=salir, h=ayuda): ").lower()
@@ -309,13 +307,18 @@ def jugar_turno(tablero_inicial, jugador):
         if cond1 or cond2:
             aparicion(tablero_jugador)
             mov += 1
+            movimientos_replay.append(copy.deepcopy(tablero_jugador))
+            i = i+1
         # Verifica si está lleno o alcanzó 2048 (usa vacías)
         lista = [tablero_jugador[f][c] for f in range(4) for c in range(4) if tablero_jugador[f][c] != ""]
         mayor = max(lista) if lista else 0
         vacias = sum(1 for f in range(4) for c in range(4) if tablero_jugador[f][c] == "")
-        
+        print("Casillas vacías: ", vacias)
+        print("Numero mayor: ", mayor)
+        print("Movimiento #: ", mov)
 
         if vacias == 0 or mayor >= 2048:
+            repeticion(i,movimientos_replay)
             break
 
     # Mostrar resumen final con formato bonito:
@@ -436,7 +439,8 @@ def jugar_turno_maquina(tablero_inicial):
     tablero_jugador = copy.deepcopy(tablero_inicial)
     fila1, fila2, fila3, fila4 = tablero_jugador[0], tablero_jugador[1], tablero_jugador[2], tablero_jugador[3]
     mov = 0
-
+    movimientos_replay = []
+    i = 0
     while True:
         mostrar_tablero(tablero_jugador)
         tecla = decidir_mejor_movimiento(tablero_jugador)
@@ -451,27 +455,34 @@ def jugar_turno_maquina(tablero_inicial):
             mov_izquierda(tablero_jugador)
             sumas_columnas(tablero_jugador)
             mov_izquierda(tablero_jugador)
+            i = i+1
         elif tecla == "d":
             mov_derecha(tablero_jugador)
             sumas_columnas(tablero_jugador)
             mov_derecha(tablero_jugador)
+            i = i+1
         elif tecla == "w":
             mov_arriba(fila1, fila2, fila3, fila4)
             sumas_filas(fila1, fila2, fila3, fila4)
             mov_arriba(fila1, fila2, fila3, fila4)
+            i = i+1
         elif tecla == "s":
             mov_abajo(fila1, fila2, fila3, fila4)
             sumas_filas(fila1, fila2, fila3, fila4)
             mov_abajo(fila1, fila2, fila3, fila4)
-
+            i = i+1
         aparicion(tablero_jugador)
+        movimientos_replay.append(copy.deepcopy(tablero_jugador))
         mov += 1
 
         lista = [tablero_jugador[f][c] for f in range(4) for c in range(4) if tablero_jugador[f][c] != ""]
         mayor = max(lista) if lista else 0
         vacias = sum(1 for f in range(4) for c in range(4) if tablero_jugador[f][c] == "")
-        
+        print("Casillas vacáis: ", vacias)
+        print("Número mayor: ", mayor)
+        print("Movimiento #: ", mov)
         if vacias == 0 or mayor >= 2048:
+            repeticion(i,movimientos_replay)
             break
 
     print(f"Máquina termina con {mov} movimientos, mayor: {mayor}")
@@ -556,12 +567,6 @@ def mostrar_ayuda():
     print("==============================")
     print("¡Disfruta del juego!")
     print("==============================\n")
-
-
-#Sistema de replay
-movimientos_replay = []
-#Aun me falta pensarla :V ya que no se como guardar los movimientos
-
 
 def mostrar_menu():
     ventana = tk.Tk()
