@@ -208,22 +208,23 @@ def teclas():
         if tecla == "q":
             print("¡Juego terminado!")
             return
-        elif tecla == "h":
-            mostrar_ayuda()
-            continue
         elif tecla == "a":
+            print("Movimiento: IZQUIERDA")
             cond1 = mov_izquierda(tablero)
             cond2 = sumas_columnas(tablero)
             mov_izquierda(tablero)
         elif tecla == "d":
+            print("Movimiento: DERECHA")
             cond1 = mov_derecha(tablero)
             cond2 = sumas_columnas(tablero)
             mov_derecha(tablero)
         elif tecla == "w":
+            print("Movimiento: ARRIBA")
             cond1 = mov_arriba(fila1, fila2, fila3, fila4)
             cond2 = sumas_filas(fila1, fila2, fila3, fila4)
             mov_arriba(fila1, fila2, fila3, fila4)
         elif tecla == "s":
+            print("Movimiento: ABAJO")
             cond1 = mov_abajo(fila1, fila2, fila3, fila4)
             cond2 = sumas_filas(fila1, fila2, fila3, fila4)
             mov_abajo(fila1, fila2, fila3, fila4)
@@ -234,10 +235,10 @@ def teclas():
             i = i+1
             movimientos_replay.append(copy.deepcopy(tablero))
             aparicion(tablero)
-        mostrar_tablero(tablero)
-        lista = [tablero[f][c] for f in range(4) for c in range(4) if tablero[f][c] != ""]
-        mayor = max(lista) if lista else 0
-        vacias = sum(1 for f in range(4) for c in range(4) if tablero[f][c] == "")
+            mostrar_tablero(tablero)
+            lista = [tablero[f][c] for f in range(4) for c in range(4) if tablero[f][c] != ""]
+            mayor = max(lista) if lista else 0
+            vacias = sum(1 for f in range(4) for c in range(4) if tablero[f][c] == "")
         if mayor >= 2048 or vacias == 0:
             print("Juego terminado")
             print("Movimientos Totales: ", mov)
@@ -257,6 +258,7 @@ def repeticion(i, movimientos_replay):
         for x in range(1,i+1):
             print("Movimiento #: ", x-1)
             mostrar_tablero(movimientos_replay[x-1])
+            time.sleep(0.25)
         print("\n")
 
 def modo_individual():
@@ -286,18 +288,22 @@ def jugar_turno(tablero_inicial, jugador):
         if tecla == "q":
             break
         elif tecla == "a":
+            print("Movimiento: IZQUIERDA")
             cond1 = mov_izquierda(tablero_jugador)
             cond2 = sumas_columnas(tablero_jugador)
             mov_izquierda(tablero_jugador)
         elif tecla == "d":
+            print("Movimiento: DERECHA")
             cond1 = mov_derecha(tablero_jugador)
             cond2 = sumas_columnas(tablero_jugador)
             mov_derecha(tablero_jugador)
         elif tecla == "w":
+            print("Movimiento: ARRIBA")
             cond1 = mov_arriba(fila1, fila2, fila3, fila4)
             cond2 = sumas_filas(fila1, fila2, fila3, fila4)
             mov_arriba(fila1, fila2, fila3, fila4)
         elif tecla == "s":
+            print("Movimiento: ABAJO")
             cond1 = mov_abajo(fila1, fila2, fila3, fila4)
             cond2 = sumas_filas(fila1, fila2, fila3, fila4)
             mov_abajo(fila1, fila2, fila3, fila4)
@@ -362,6 +368,7 @@ def modo_multijugador():
             print(f"¡{segundo_jugador} gana por menos movimientos!")
         else:
             print("¡Empate total!")
+    mostrar_menu()
 
 
 # ----------------------------------------------
@@ -537,8 +544,8 @@ def modo_maquina():
             print("¡El jugador gana por menos movimientos!")
         else:
             print("¡Empate total!")
-
-
+    mostrar_menu()
+    
 def manejar_modo(modo):
     if modo == 1:
         print("Modo Normal")
@@ -549,6 +556,9 @@ def manejar_modo(modo):
     elif modo == 3:
         print("Modo Jugador vs Máquina (con turno humano)")
         modo_maquina() 
+    elif modo == 4:
+        mostrar_ayuda()
+        mostrar_menu()
 
 
 #PTS EXTRA 😎
@@ -576,6 +586,7 @@ def mostrar_menu():
     tk.Button(ventana, text="1 Jugador", command=lambda: [ventana.destroy(), manejar_modo(1)]).pack(pady=5)
     tk.Button(ventana, text="Jugador vs Jugador", command=lambda: [ventana.destroy(), manejar_modo(2)]).pack(pady=5)
     tk.Button(ventana, text="Jugador vs Máquina", command=lambda: [ventana.destroy(), manejar_modo(3)]).pack(pady=5)
+    tk.Button(ventana, text="Ayuda", command=lambda: [ventana.destroy(), manejar_modo(4)]).pack(pady=5)
     ventana.mainloop()
 
 mostrar_menu()
