@@ -228,13 +228,18 @@ def teclas():
             cond1 = mov_abajo(fila1, fila2, fila3, fila4)
             cond2 = sumas_filas(fila1, fila2, fila3, fila4)
             mov_abajo(fila1, fila2, fila3, fila4)
+        elif tecla == "b":
+            back(tablero, movimientos_replay)
+            mostrar_tablero(tablero)
+            mov = mov-1
+            continue
         else:
             print("Movimiento inválido")
         if cond1 or cond2:
             mov = mov+1
             i = i+1
-            movimientos_replay.append(copy.deepcopy(tablero))
             aparicion(tablero)
+            movimientos_replay.append(copy.deepcopy(tablero))
             mostrar_tablero(tablero)
             lista = [tablero[f][c] for f in range(4) for c in range(4) if tablero[f][c] != ""]
             mayor = max(lista) if lista else 0
@@ -249,17 +254,23 @@ def teclas():
         print("Movimiento # " ,mov)
         print("Número mayor: ", mayor)
         print("Casillas vacías: ", vacias) 
-
+def back(tablero, movimientos_replay):
+    movimientos_replay.pop()
+    for c in range(4):
+        for a in range(4):
+            tablero[c][a] = movimientos_replay[-1][c][a]
 
 def repeticion(i, movimientos_replay):
     print("Desea ver la repeticion?")
-    n = input()
-    if n == "y":
-        for x in range(1,i+1):
-            print("Movimiento #: ", x-1)
-            mostrar_tablero(movimientos_replay[x-1])
-            time.sleep(0.25)
-        print("\n")
+    try:
+        n = input()
+        if n == "y":
+            for x in range(1,i+1):
+                mostrar_tablero(movimientos_replay[x-1])
+                time.sleep(0.5)
+            print("\n")
+    except IndexError:
+        print("_")
 
 def modo_individual():
     generar_tablero_inicial()
@@ -307,6 +318,10 @@ def jugar_turno(tablero_inicial, jugador):
             cond1 = mov_abajo(fila1, fila2, fila3, fila4)
             cond2 = sumas_filas(fila1, fila2, fila3, fila4)
             mov_abajo(fila1, fila2, fila3, fila4)
+        elif tecla == "b":
+            back(tablero_jugador, movimientos_replay)
+            mov = mov-1
+            continue
         else:
             print("Movimiento inválido.")
             continue
@@ -545,7 +560,8 @@ def modo_maquina():
         else:
             print("¡Empate total!")
     mostrar_menu()
-    
+
+
 def manejar_modo(modo):
     if modo == 1:
         print("Modo Normal")
